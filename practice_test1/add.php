@@ -10,14 +10,30 @@ if ( isset($_SESSION['error']) ) {
 
 if ( isset($_POST['url']) && isset($_POST['email']) 
   && isset($_POST['length']) && isset($_POST['rating'])) {
-    if (empty($_POST['url']) || empty($_POST['email']) || empty($_POST['length']) || empty($_POST['rating']) ) {
 
+    //Check if fields are empty
+    if (empty($_POST['url']) || empty($_POST['email']) || empty($_POST['length']) || empty($_POST['rating']) ) {
       $_SESSION['error'] = 'All values are required';
       header( 'Location: add.php' );
+      return;
     }
-    elseif ((!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) || (!filter_var($_POST['url'], FILTER_VALIDATE_URL)) || !is_numeric($_POST['length']) || !is_numeric($_POST['rating'])) {
+    //Check if URL starts with https:// or http://
+    elseif ( (strpos($_POST['url'], 'http://') === FALSE) && (strpos($_POST['url'], 'https://') === FALSE ) )  {
       $_SESSION['error'] = 'Error in input data';
       header( 'Location: add.php' );
+      return;
+    }
+    //Check if email have a @
+    elseif (strpos($_POST['email'], '@') === FALSE) {
+      $_SESSION['error'] = 'Error in input data';
+      header( 'Location: add.php' );
+      return;
+    }
+    //Check if ratings and length are numeric
+    elseif (!is_numeric($_POST['length']) || !is_numeric($_POST['rating'])) {
+      $_SESSION['error'] = 'Error in input data';
+      header( 'Location: add.php' );
+      return;
     }
     else {
       $sql = "INSERT INTO videos (url, email, length, rating) 
