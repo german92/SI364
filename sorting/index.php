@@ -8,18 +8,21 @@ session_start();
 <html>
   <head>
     <title>German Ostaszynski Lipiec Sorting Assigment</title>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<script type="text/javascript" src="jquery-latest.js"></script> 
-<script type="text/javascript" src="jquery.tablesorter.js"></script> 
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="jquery-latest.js"></script> 
+    <script type="text/javascript" src="jquery.tablesorter.js"></script> 
 
   </head>
 
   <body>
     <h2>Welcome to German's Sorting Assigment (hw9)</h2>
+    <h3>Note: you can sort student names, college names and majors (just click the
+	heading)</h3>
     <table id="myTable" class="tablesorter" >
       <thead>
-      <tr>
+      <tr id = "top_table">
 	<th>STUDENT NAME</th>
 	<th>STUDENT ID</th>
 	<th>COLLEGE NAME</th>
@@ -52,7 +55,7 @@ session_start();
 	echo("</td>");
 
 	//Outputs majors
-	echo("<td>");
+	echo("<td class = \"major\">");
 	echo($row['major']);
 	echo("</td></tr>\n");
       }
