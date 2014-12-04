@@ -26,46 +26,28 @@ if (isset($_POST['username'], $_POST['email'], $_POST['p'])) {
     // breaking these rules.
     //
  
-    $prep_stmt = "SELECT id FROM members WHERE email = ? LIMIT 1";
-    $stmt = $mysqli->prepare($prep_stmt);
- 
-   // check existing email  
-    if ($stmt) {
-        $stmt->bind_param('s', $email);
-        $stmt->execute();
-        $stmt->store_result();
- 
-        if ($stmt->num_rows == 1) {
-            // A user with this email address already exists
-            $error_msg .= '<p class="error">A user with this email address already exists.</p>';
-                        $stmt->close();
-        }
-                $stmt->close();
-    } else {
-        $error_msg .= '<p class="error">Database error Line 39</p>';
-                $stmt->close();
+    $sql = "SELECT id FROM members WHERE email = :email  LIMIT 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt -> execute(array(':email' => $_POST['email']));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($row != false) {
+      //A user with this email address already exists
+      $error_msg .= '<p class "error"> A user with this email address already exists. </p>';
     }
- 
+
     // check existing username
-    $prep_stmt = "SELECT id FROM members WHERE username = ? LIMIT 1";
-    $stmt = $mysqli->prepare($prep_stmt);
+    $sql = "SELECT id FROM members WHERE username = :username LIMIT 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(array(':username' => $_POST['username']));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
  
-    if ($stmt) {
-        $stmt->bind_param('s', $username);
-        $stmt->execute();
-        $stmt->store_result();
- 
-                if ($stmt->num_rows == 1) {
-                        // A user with this username already exists
-                        $error_msg .= '<p class="error">A user with this username already exists</p>';
-                        $stmt->close();
-                }
-                $stmt->close();
-        } else {
-                $error_msg .= '<p class="error">Database error line 55</p>';
-                $stmt->close();
-        }
- 
+    if ($row != false) {
+      //A user with this username already exists
+      $error_msg .= '<p class "error"> A user with this username already exists. </p>';
+    }
+
     // TODO: 
     // We'll also have to account for the situation where the user doesn't have
     // rights to do registration, by checking what type of user is attempting to
@@ -77,16 +59,23 @@ if (isset($_POST['username'], $_POST['email'], $_POST['p'])) {
         $random_salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
  
         // Create salted password 
-        $password = hash('sha512', $password . $random_salt);
+        $password = hash('sha512', $_POST['p'] . $random_salt);
  
         // Insert the new user into the database 
-        if ($insert_stmt = $mysqli->prepare("INSERT INTO members (username, email, password, salt) VALUES (?, ?, ?, ?)")) {
-            $insert_stmt->bind_param('ssss', $username, $email, $password, $random_salt);
-            // Execute the prepared query.
-            if (! $insert_stmt->execute()) {
-                header('Location: ../error.php?err=Registration failure: INSERT');
+	$sql = "INSERT INTO members (username, email, password, salt)
+		VALUES (:username, :email, :password, :salt)";
+	$stmt = $pdo->prepare($sql);
+
+	//Execute the prepared query
+	if ($stmt ->execute(array(':username' => $_POST['username'],
+			    ':email' => $_POST['email'],
+			    ':password' => $password,
+			    ':salt' => $random_salt))) {
+	
+          header('Location: ../error.php?err=Registration failure: INSERT');
             }
-        }
         header('Location: ./register_success.php');
     }
 }
+
+
