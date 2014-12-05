@@ -1,6 +1,7 @@
 <?php
 include_once 'includes/db_connect.php';
 include_once 'includes/functions.php';
+require_once "pdo.php";
  
 sec_session_start();
  
@@ -14,11 +15,13 @@ if (login_check($pdo) == true) {
 <html>
     <head>
         <title>Secure Login: Log In</title>
-        <link rel="stylesheet" href="styles/main.css" />
+	<link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="style/main.css" />
         <script type="text/JavaScript" src="js/sha512.js"></script> 
         <script type="text/JavaScript" src="js/forms.js"></script> 
     </head>
     <body>
+	<h1>Welcome to German's Application</h1>
         <?php
         if (isset($_GET['error'])) {
             echo '<p class="error">Error Logging In!</p>';
